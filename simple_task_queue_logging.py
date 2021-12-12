@@ -9,9 +9,20 @@ PROCESSES = multiprocessing.cpu_count() - 1
 NUMBER_OF_TASKS = 10
 
 
-def process_tasks(task_queue):
+def create_logger(pid):
     logger = multiprocessing.get_logger()
+    logger.setLevel(logging.INFO)
+    fh = logging.FileHandler(f"logs/process_{pid}.log")
+    fmt = "%(asctime)s - %(levelname)s - %(message)s"
+    formatter = logging.Formatter(fmt)
+    fh.setFormatter(formatter)
+    logger.addHandler(fh)
+    return logger
+
+
+def process_tasks(task_queue):
     proc = os.getpid()
+    logger = create_logger(proc)
     while not task_queue.empty():
         try:
             book = task_queue.get()
